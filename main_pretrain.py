@@ -103,8 +103,7 @@ def get_args_parser():
      # * Finetuning params
     parser.add_argument('--finetune', default='',type=str,
                         help='finetune from checkpoint')
-    parser.add_argument('--task', default='',type=str,
-                        help='finetune from checkpoint')
+    
     return parser
 
 
