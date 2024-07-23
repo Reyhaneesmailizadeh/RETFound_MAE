@@ -185,7 +185,13 @@ def main(args):
     loss_scaler = NativeScaler()
 
     misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
-
+    
+    # Load pre-trained weights if provided
+    if args.finetune:
+        checkpoint = torch.load(args.finetune, map_location='cpu')
+        print(f"Load pre-trained checkpoint from: {args.finetune}")
+        model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
+        
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
     for epoch in range(args.start_epoch, args.epochs):
