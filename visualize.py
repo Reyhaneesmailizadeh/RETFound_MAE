@@ -46,48 +46,51 @@ def main(args):
         return model
 
     def run_one_image(img, model):
+        # Ensure the image has 3 dimensions (H, W, C)
+        if len(img.shape) == 2:
+            img = img[:, :, None]  # Add a channel dimension
+    
         x = torch.tensor(img)
-
+    
         # make it a batch-like
         x = x.unsqueeze(dim=0)
         x = torch.einsum('nhwc->nchw', x)
-
+    
         # run MAE
         loss, y, mask = model(x.float(), mask_ratio=0.75)
         y = model.unpatchify(y)
         y = torch.einsum('nchw->nhwc', y).detach().cpu()
-
+    
         # visualize the mask
         mask = mask.detach()
-        mask = mask.unsqueeze(-1).repeat(1, 1, model.patch_embed.patch_size[0]**2 *3)  # (N, H*W, p*p*3)
+        mask = mask.unsqueeze(-1).repeat(1, 1, model.patch_embed.patch_size[0]**2 * x.shape[1])  # (N, H*W, p*p*C)
         mask = model.unpatchify(mask)  # 1 is removing, 0 is keeping
         mask = torch.einsum('nchw->nhwc', mask).detach().cpu()
-
+    
         x = torch.einsum('nchw->nhwc', x)
-
+    
         # masked image
         im_masked = x * (1 - mask)
-
+    
         # MAE reconstruction pasted with visible patches
         im_paste = x * (1 - mask) + y * mask
-
+    
         # make the plt figure larger
         plt.rcParams['figure.figsize'] = [24, 24]
-
+    
         plt.subplot(1, 4, 1)
-        show_image(x[0], "original")
-
+        show_image(x[0].numpy(), "original")
+    
         plt.subplot(1, 4, 2)
-        show_image(im_masked[0], "masked")
-
+        show_image(im_masked[0].numpy(), "masked")
+    
         plt.subplot(1, 4, 3)
-        show_image(y[0], "reconstruction")
-
+        show_image(y[0].numpy(), "reconstruction")
+    
         plt.subplot(1, 4, 4)
-        show_image(im_paste[0], "reconstruction + visible")
-
+        show_image(im_paste[0].numpy(), "reconstruction + visible")
+    
         plt.show()
-        # This is an MAE model trained with pixels as targets for visualization (ViT-Large, training mask ratio=0.75)
 
 
     img_url = args.image_url # fox, from ILSVRC2012_val_00046145
