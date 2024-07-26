@@ -100,6 +100,7 @@ def main(args):
     # make random mask reproducible (comment out to make it change)
     torch.manual_seed(2)
     print('MAE with pixel reconstruction:')
+    img = np.array(img)
     run_one_image(img, model_mae)
 
 
