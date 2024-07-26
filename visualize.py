@@ -99,8 +99,15 @@ def main(args):
     # make random mask reproducible (comment out to make it change)
     torch.manual_seed(2)
     print('MAE with pixel reconstruction:')
-    img = np.array(img)
-    print("converted")
+    img = img.resize((224, 224))
+    img = np.array(img) / 255.
+    
+    assert img.shape == (224, 224, 3)
+    
+    # normalize by ImageNet mean and std
+    img = img - imagenet_mean
+    img = img / imagenet_std
+    print("image preprocessed")
     run_one_image(img, model_mae)
 
 
