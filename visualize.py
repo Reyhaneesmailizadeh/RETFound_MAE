@@ -101,6 +101,7 @@ def main(args):
     torch.manual_seed(2)
     print('MAE with pixel reconstruction:')
     img = np.array(img)
+    print("converted")
     run_one_image(img, model_mae)
 
 
