@@ -190,7 +190,7 @@ def main(args):
     if args.finetune:
         checkpoint = torch.load(args.finetune, map_location='cpu')
         print(f"Load pre-trained checkpoint from: {args.finetune}")
-        model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
+        model_without_ddp.load_state_dict(checkpoint['model'], strict=True)
         
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
