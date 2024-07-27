@@ -34,6 +34,7 @@ def main(args):
         plt.imshow(torch.clip((image * imagenet_std + imagenet_mean) * 255, 0, 255).int())
         plt.title(title, fontsize=16)
         plt.axis('off')
+        plt.savefig("/content/drive/MyDrive/results")
         return
 
     def prepare_model(chkpt_dir, arch='mae_vit_large_patch16'):
