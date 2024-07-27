@@ -76,16 +76,16 @@ def main(args):
     
         plt.subplot(1, 4, 1)
         show_image(x[0], "original")
-    
+        print("original image plotted")
         plt.subplot(1, 4, 2)
         show_image(im_masked[0], "masked")
-    
+        print("masked image plotted")
         plt.subplot(1, 4, 3)
         show_image(y[0], "reconstruction")
-    
+        print("reconstructed image plotted")
         plt.subplot(1, 4, 4)
         show_image(im_paste[0], "reconstruction + visible")
-    
+        print("reconstructed + visible image plotted")
         plt.show()
 
 
