@@ -28,13 +28,13 @@ def main(args):
     imagenet_mean = np.array([0.485, 0.456, 0.406])
     imagenet_std = np.array([0.229, 0.224, 0.225])
 
-    def show_image(image, title=''):
+    def show_image(image, title='', i):
         # image is [H, W, 3]
         assert image.shape[2] == 3
         plt.imshow(torch.clip((image * imagenet_std + imagenet_mean) * 255, 0, 255).int())
         plt.title(title, fontsize=16)
         plt.axis('off')
-        plt.savefig("/content/drive/MyDrive/results")
+        plt.savefig(f"/content/drive/MyDrive/results/results{i}.png")
         return
 
     def prepare_model(chkpt_dir, arch='mae_vit_large_patch16'):
@@ -76,16 +76,16 @@ def main(args):
         plt.rcParams['figure.figsize'] = [24, 24]
     
         plt.subplot(1, 4, 1)
-        show_image(x[0], "original")
+        show_image(x[0], "original", 1)
         print("original image plotted")
         plt.subplot(1, 4, 2)
-        show_image(im_masked[0], "masked")
+        show_image(im_masked[0], "masked", 2)
         print("masked image plotted")
         plt.subplot(1, 4, 3)
-        show_image(y[0], "reconstruction")
+        show_image(y[0], "reconstruction", 3)
         print("reconstructed image plotted")
         plt.subplot(1, 4, 4)
-        show_image(im_paste[0], "reconstruction + visible")
+        show_image(im_paste[0], "reconstruction + visible", 4)
         print("reconstructed + visible image plotted")
         plt.show()
 
