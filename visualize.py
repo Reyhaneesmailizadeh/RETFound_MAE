@@ -28,7 +28,7 @@ def main(args):
     imagenet_mean = np.array([0.485, 0.456, 0.406])
     imagenet_std = np.array([0.229, 0.224, 0.225])
 
-    def show_image(image, title='', i):
+    def show_image(image, i, title=''):
         # image is [H, W, 3]
         assert image.shape[2] == 3
         plt.imshow(torch.clip((image * imagenet_std + imagenet_mean) * 255, 0, 255).int())
@@ -76,16 +76,16 @@ def main(args):
         plt.rcParams['figure.figsize'] = [24, 24]
     
         plt.subplot(1, 4, 1)
-        show_image(x[0], "original", 1)
+        show_image(x[0], 1, "original")
         print("original image plotted")
         plt.subplot(1, 4, 2)
-        show_image(im_masked[0], "masked", 2)
+        show_image(im_masked[0], 2, "masked")
         print("masked image plotted")
         plt.subplot(1, 4, 3)
-        show_image(y[0], "reconstruction", 3)
+        show_image(y[0], 3, "reconstruction")
         print("reconstructed image plotted")
         plt.subplot(1, 4, 4)
-        show_image(im_paste[0], "reconstruction + visible", 4)
+        show_image(im_paste[0], 4, "reconstruction + visible")
         print("reconstructed + visible image plotted")
         plt.show()
 
