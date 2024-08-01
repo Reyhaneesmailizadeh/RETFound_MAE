@@ -194,15 +194,17 @@ def main(args):
         
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
+    loss_list = []
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
-        train_stats = train_one_epoch(
+        train_stats, loss = train_one_epoch(
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             log_writer=log_writer,
             args=args
         )
+        loss_list.append(loss)
         if args.output_dir and (epoch % 50 == 0 or epoch + 1 == args.epochs):
             misc.save_model_pretrain(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
@@ -220,11 +222,29 @@ def main(args):
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
-
+    return loss_list
 
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
-    main(args)
+    epochs = arg.epochs
+    loss_list = main(args)
+    
+    # Check if the length of loss_list matches the number of epochs
+    if len(loss_list) != epochs:
+        raise ValueError("The length of loss_list does not match the number of epochs.")
+    
+    # Create a plot for loss vs. epoch
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, epochs + 1), loss_list, marker='o', linestyle='-', color='b')
+    plt.title('Loss vs. Epochs')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.grid(True)
+    
+    # Save the plot
+    plt.savefig("/content/drive/MyDrive/results/learningcurve.png")
+    print(f"Plot saved as learningcurve.png")
+    
