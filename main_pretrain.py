@@ -210,6 +210,8 @@ def main(args):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
             data_loader_valid.sampler.set_epoch(epoch)
+        if len(data_loader_valid.dataset) == 0:
+            print("Warning1: validation dataset is empty.")
         train_stats, loss_train, loss_valid = train_one_epoch(
             model, data_loader_train, data_loader_valid,
             optimizer, device, epoch, loss_scaler,
