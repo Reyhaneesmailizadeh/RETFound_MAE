@@ -150,7 +150,10 @@ def main(args):
         log_writer = SummaryWriter(log_dir=args.log_dir)
     else:
         log_writer = None
-
+        
+    print(f"Training dataset size: {len(dataset_train)}")
+    print(f"Validation dataset size: {len(dataset_valid)}")
+    
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
         batch_size=args.batch_size,
@@ -165,6 +168,11 @@ def main(args):
         pin_memory=args.pin_mem,
         drop_last=True,
     )
+    
+    for batch in data_loader_valid:
+    print("Validation batch:", batch)
+    break  # Only print the first batch
+
     # define the model
     model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss)
 
@@ -206,6 +214,8 @@ def main(args):
     start_time = time.time()
     loss_list_train = []
     loss_list_valid = []
+    
+
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
