@@ -129,18 +129,22 @@ def main(args):
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
     dataset_train = datasets.ImageFolder(os.path.join(args.data_path, 'train'), transform=transform_train)
+    dataset_valid = datasets.ImageFolder(os.path.join(args.data_path, 'valid'), transform=transform_train)
     print(dataset_train)
-
+    print(dataset_valid)
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
+        sampler_valid = torch.utils.data.DistributedSampler(
+            dataset_valid, num_replicas=num_tasks, rank=global_rank, shuffle=True
+        )
         print("Sampler_train = %s" % str(sampler_train))
     else:
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
-
+        sampler_valid = torch.utils.data.RandomSampler(dataset_valid)
     if global_rank == 0 and args.log_dir is not None:
         os.makedirs(args.log_dir, exist_ok=True)
         log_writer = SummaryWriter(log_dir=args.log_dir)
@@ -154,7 +158,13 @@ def main(args):
         pin_memory=args.pin_mem,
         drop_last=True,
     )
-    
+    data_loader_valid = torch.utils.data.DataLoader(
+        dataset_valid, sampler=sampler_valid,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
+        pin_memory=args.pin_mem,
+        drop_last=True,
+    )
     # define the model
     model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss)
 
@@ -194,17 +204,19 @@ def main(args):
         
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
-    loss_list = []
+    loss_list_train = []
+    loss_list_valid = []
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
-        train_stats, loss = train_one_epoch(
-            model, data_loader_train,
+        train_stats, loss_train, loss_valid = train_one_epoch(
+            model, data_loader_train, data_loader_valid,
             optimizer, device, epoch, loss_scaler,
             log_writer=log_writer,
             args=args
         )
-        loss_list.append(loss)
+        loss_list_train.append(loss_train)
+        loss_list_valid.append(loss_valid)
         if args.output_dir and (epoch % 50 == 0 or epoch + 1 == args.epochs):
             misc.save_model_pretrain(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
@@ -222,7 +234,7 @@ def main(args):
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
-    return loss_list
+    return loss_list_train, loss_list_valid
 
 if __name__ == '__main__':
     args = get_args_parser()
@@ -230,21 +242,21 @@ if __name__ == '__main__':
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
     epochs = arg.epochs
-    loss_list = main(args)
+    loss_list_train, loss_list_valid = main(args)
     
     # Check if the length of loss_list matches the number of epochs
-    if len(loss_list) != epochs:
-        raise ValueError("The length of loss_list does not match the number of epochs.")
+    if len(loss_list_train) != epochs:
+        raise ValueError("The length of loss_list_train does not match the number of epochs.")
     
     # Create a plot for loss vs. epoch
     plt.figure(figsize=(10, 6))
-    plt.plot(range(1, epochs + 1), loss_list, marker='o', linestyle='-', color='b')
+    plt.plot(range(1, epochs + 1), loss_list_train, marker='o', linestyle='-', color='b')
     plt.title('Loss vs. Epochs')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.grid(True)
     
     # Save the plot
-    plt.savefig("/content/drive/MyDrive/results/learningcurve.png")
+    plt.savefig("/content/drive/MyDrive/results/learningcurves.png")
     print(f"Plot saved as learningcurve.png")
     
