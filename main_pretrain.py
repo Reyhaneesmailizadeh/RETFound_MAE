@@ -170,8 +170,8 @@ def main(args):
     )
     
     for batch in data_loader_valid:
-    print("Validation batch:", batch)
-    break  # Only print the first batch
+        print("Validation batch:", batch)
+        break  # Only print the first batch
 
     # define the model
     model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss)
