@@ -15,7 +15,7 @@ import numpy as np
 import os
 import time
 from pathlib import Path
-
+import matplotlib.pyplot as plt
 import torch
 import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
@@ -244,19 +244,16 @@ if __name__ == '__main__':
     epochs = arg.epochs
     loss_list_train, loss_list_valid = main(args)
     
-    # Check if the length of loss_list matches the number of epochs
-    if len(loss_list_train) != epochs:
-        raise ValueError("The length of loss_list_train does not match the number of epochs.")
-    
-    # Create a plot for loss vs. epoch
+        # Create a plot
     plt.figure(figsize=(10, 6))
-    plt.plot(range(1, epochs + 1), loss_list_train, marker='o', linestyle='-', color='b')
-    plt.title('Loss vs. Epochs')
+    plt.plot(range(epochs), loss_list_train, label='Training Loss')
+    plt.plot(range(epochs), loss_list_valid, label='Validation Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
+    plt.title('Training and Validation Loss vs Epochs')
+    plt.legend()
     plt.grid(True)
     
-    # Save the plot
-    plt.savefig("/content/drive/MyDrive/results/learningcurves.png")
-    print(f"Plot saved as learningcurve.png")
-    
+    # Save the plot to a file
+    plt.savefig('/content/drive/MyDrive/results/learningcurves.png')
+    print(f"Plot saved as learningcurves.png")
