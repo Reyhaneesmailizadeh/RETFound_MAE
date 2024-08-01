@@ -19,7 +19,7 @@ import util.lr_sched as lr_sched
 
 
 def train_one_epoch(model: torch.nn.Module,
-                    data_loader: Iterable, optimizer: torch.optim.Optimizer,
+                    data_loader: Iterable, data_loader_valid : Iterable, optimizer: torch.optim.Optimizer,
                     device: torch.device, epoch: int, loss_scaler,
                     log_writer=None,
                     args=None):
@@ -76,7 +76,20 @@ def train_one_epoch(model: torch.nn.Module,
             log_writer.add_scalar('lr', lr, epoch_1000x)
 
 
+    for data_iter_step, (samples, _) in enumerate(metric_logger.log_every(data_loader_valid, print_freq, header)):
+
+        samples = samples.to(device, non_blocking=True)
+
+        with torch.cuda.amp.autocast():
+            loss, _, _ = model(samples, mask_ratio=args.mask_ratio)
+
+        loss_value_valid = loss.item()
+
+
+
+    
+
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
-    return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
+    return {k: meter.global_avg for k, meter in metric_logger.meters.items()}, loss_value, loss_value_valid
