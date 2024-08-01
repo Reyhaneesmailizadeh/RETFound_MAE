@@ -241,7 +241,7 @@ if __name__ == '__main__':
     args = args.parse_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
-    epochs = arg.epochs
+    epochs = args.epochs
     loss_list_train, loss_list_valid = main(args)
     
         # Create a plot
