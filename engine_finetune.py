@@ -175,7 +175,8 @@ def evaluate(data_loader, model, device, task, epoch, mode, num_class):
             prediction_list.extend(prediction_softmax.cpu().detach().numpy())
 
         acc1,_ = accuracy(output, target, topk=(1,2))
-
+        print(f"output of model: {output}")
+        print(f"target: {target}")
         batch_size = images.shape[0]
         metric_logger.update(loss=loss.item())
         metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
