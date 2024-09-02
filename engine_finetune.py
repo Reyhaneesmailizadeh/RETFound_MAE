@@ -208,5 +208,5 @@ def evaluate(data_loader, model, device, task, epoch, mode, num_class):
         cm.plot(cmap=plt.cm.Blues,number_label=True,normalized=True,plot_lib="matplotlib")
         plt.savefig(task+'confusion_matrix_test.jpg',dpi=600,bbox_inches ='tight')
     
-    return {k: meter.global_avg for k, meter in metric_logger.meters.items()},auc_roc
+    return {k: meter.global_avg for k, meter in metric_logger.meters.items()},auc_roc,F1
 
