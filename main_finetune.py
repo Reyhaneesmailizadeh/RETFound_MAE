@@ -334,7 +334,7 @@ def main(args):
         )
 
         val_stats,val_auc_roc, f1 = evaluate(data_loader_val, model, device,args.task,epoch, mode='val',num_class=args.nb_classes)
-        if max_f1<f1:
+        if max_f1<f1 and not np.isnan(f1):
             max_f1 = f1
             
             if args.output_dir:
