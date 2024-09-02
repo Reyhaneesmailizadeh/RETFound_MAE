@@ -321,7 +321,7 @@ def main(args):
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
     max_accuracy = 0.0
-    max_auc = 0.0
+    max_f1 = 0.0
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
@@ -333,9 +333,9 @@ def main(args):
             args=args
         )
 
-        val_stats,val_auc_roc = evaluate(data_loader_val, model, device,args.task,epoch, mode='val',num_class=args.nb_classes)
-        if max_auc<val_auc_roc:
-            max_auc = val_auc_roc
+        val_stats,val_auc_roc, f1 = evaluate(data_loader_val, model, device,args.task,epoch, mode='val',num_class=args.nb_classes)
+        if max_f1<f1:
+            max_f1 = f1
             
             if args.output_dir:
                 misc.save_model(
