@@ -315,7 +315,7 @@ def main(args):
     misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
 
     if args.eval:
-        test_stats,auc_roc, f1 = evaluate(data_loader_test, model, device, args.task, epoch=0, mode='test',num_class=args.nb_classes)
+        test_stats,auc_roc, f1, sensitivity, specificity, precision = evaluate(data_loader_test, model, device, args.task, epoch=0, mode='test',num_class=args.nb_classes)
         exit(0)
 
     print(f"Start training for {args.epochs} epochs")
@@ -333,7 +333,7 @@ def main(args):
             args=args
         )
 
-        val_stats,val_auc_roc, f1 = evaluate(data_loader_val, model, device,args.task,epoch, mode='val',num_class=args.nb_classes)
+        val_stats,val_auc_roc, f1, sensitivity, specificity, precision = evaluate(data_loader_val, model, device,args.task,epoch, mode='val',num_class=args.nb_classes)
         if max_f1 <= f1 and not np.isnan(f1):
             max_f1 = f1
             
@@ -363,7 +363,7 @@ def main(args):
     print('Training time {}'.format(total_time_str))
     state_dict_best = torch.load(args.task+'checkpoint-best.pth', map_location='cpu')
     model_without_ddp.load_state_dict(state_dict_best['model'])
-    test_stats,auc_roc, f1 = evaluate(data_loader_test, model_without_ddp, device,args.task,epoch=0, mode='test',num_class=args.nb_classes)
+    test_stats,auc_roc, f1, sensitivity, specificity, precision = evaluate(data_loader_test, model_without_ddp, device,args.task,epoch=0, mode='test',num_class=args.nb_classes)
 
 if __name__ == '__main__':
     args = get_args_parser()
