@@ -334,13 +334,13 @@ def main(args):
         )
 
         val_stats,val_auc_roc, f1, sensitivity, specificity, precision = evaluate(data_loader_val, model, device,args.task,epoch, mode='val',num_class=args.nb_classes)
-        if max_f1 <= f1 and not np.isnan(f1):
-            max_f1 = f1
-            
-            if args.output_dir:
-                misc.save_model(
-                    args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
-                    loss_scaler=loss_scaler, epoch=epoch)
+        # if max_f1 <= f1 and not np.isnan(f1):
+        # max_f1 = f1
+        
+        if args.output_dir:
+            misc.save_model(
+                args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
+                loss_scaler=loss_scaler, epoch=epoch)
         
         if log_writer is not None:
             log_writer.add_scalar('perf/val_acc1', val_stats['acc1'], epoch)
