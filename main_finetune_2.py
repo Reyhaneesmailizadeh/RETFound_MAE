@@ -296,7 +296,7 @@ def main(args):
 
         # load pre-trained model
         msg = model.load_state_dict(checkpoint_model, strict=False)
-        print(msg.missing_keys)
+        print(f"Missing keys in the loaded state dict: {msg.missing_keys}")
 
         
 
