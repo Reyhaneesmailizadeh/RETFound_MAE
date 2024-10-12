@@ -47,7 +47,11 @@ class CustomHead(nn.Module):
             nn.ReLU(),
             nn.BatchNorm1d(128),
             nn.Dropout(0.3),
-            nn.Linear(128, output_dim)
+            nn.Linear(128, 1024),
+            nn.ReLU(),
+            nn.BatchNorm1d(1024),
+            nn.Dropout(0.3),
+            nn.Linear(1024, output_dim)
         )
         
         # Apply Glorot (Xavier) initialization to the Linear layers
