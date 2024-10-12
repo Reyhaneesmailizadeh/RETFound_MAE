@@ -184,6 +184,22 @@ def get_args_parser():
 
 
 def main(args):
+
+        
+    
+    # Load the checkpoint
+    checkpoint_check = torch.load(args.finetune)
+    
+    # Check for the state dict
+    if 'model' in checkpoint_check:
+        state_dict_check = checkpoint_check['model']  # or checkpoint['state_dict']
+    else:
+        state_dict_check = checkpoint_check
+    
+    # Print all layer names and their shapes
+    for layer_name, params in state_dict_check.items():
+        print(f"Layer: {layer_name}, Shape: {params.shape}")
+
     misc.init_distributed_mode(args)
 
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
