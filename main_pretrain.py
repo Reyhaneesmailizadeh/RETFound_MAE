@@ -230,7 +230,7 @@ def main(args):
         )
         loss_list_train.append(loss_train)
         loss_list_valid.append(loss_valid)
-        if args.output_dir and (epoch % 29 == 0 or epoch + 1 == args.epochs):
+        if args.output_dir and (epoch % 50 == 0 or epoch + 1 == args.epochs):
             misc.save_model_pretrain(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
