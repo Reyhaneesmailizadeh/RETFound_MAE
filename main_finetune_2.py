@@ -2,7 +2,7 @@
 # All rights reserved.
 # Partly revised by YZ @UCL&Moorfields
 # --------------------------------------------------------
-
+# This is exactly like main_finetuning.py with only difference in classifier architecture. in main_finetuning.py the classifier is only one FC layer with 2 neorons. However, in this file, we have a more detailed architectire defined as customhead class.
 import argparse
 import datetime
 import json
