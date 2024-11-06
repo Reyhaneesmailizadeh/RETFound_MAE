@@ -169,6 +169,7 @@ def main(args):
     dataset_full = build_dataset(is_train='train', args=args)
     
     dataset_test = build_dataset(is_train='test', args=args)
+    N_FOLDS = 5
     kf = KFold(n_splits=N_FOLDS, shuffle=True, random_state=args.seed)
     for fold, (train_idx, val_idx) in enumerate(kf.split(dataset_full)):
       
