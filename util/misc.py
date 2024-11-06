@@ -305,6 +305,25 @@ def save_model(args, epoch, model, model_without_ddp, optimizer, loss_scaler, fo
         client_state = {'epoch': epoch}
         model.save_checkpoint(save_dir=args.task, tag=f"checkpoint-best-{fold}", client_state=client_state)
 
+def save_model_USA(args, epoch, model, model_without_ddp, optimizer, loss_scaler, fold = None):
+    output_dir = Path(args.output_dir)
+    epoch_name = str(epoch)
+    if loss_scaler is not None:
+        checkpoint_paths = [args.task+f'checkpoint-best-{fold}-USA.pth']
+        for checkpoint_path in checkpoint_paths:
+            to_save = {
+                'model': model_without_ddp.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'epoch': epoch,
+                'scaler': loss_scaler.state_dict(),
+                'args': args,
+            }
+
+            save_on_master(to_save, checkpoint_path)
+    else:
+        client_state = {'epoch': epoch}
+        model.save_checkpoint(save_dir=args.task, tag=f"checkpoint-best-{fold}-USA", client_state=client_state)
+        
 
 def save_model_pretrain(args, epoch, model, model_without_ddp, optimizer, loss_scaler):
     output_dir = Path(args.output_dir)
