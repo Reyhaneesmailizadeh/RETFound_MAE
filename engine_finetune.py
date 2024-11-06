@@ -23,42 +23,130 @@ import numpy as np
 
 
 
-def misc_measures(confusion_matrix):
+# def misc_measures(confusion_matrix):
     
-    acc = []
-    sensitivity = []
-    specificity = []
-    precision = []
-    G = []
-    F1_score_2 = []
-    mcc_ = []
+#     acc = []
+#     sensitivity = []
+#     specificity = []
+#     precision = []
+#     G = []
+#     F1_score_2 = []
+#     mcc_ = []
     
-    for i in range(1, confusion_matrix.shape[0]):
-        cm1=confusion_matrix[i]
-        acc.append(1.*(cm1[0,0]+cm1[1,1])/np.sum(cm1))
-        sensitivity_ = 1.*cm1[1,1]/(cm1[1,0]+cm1[1,1])
-        sensitivity.append(sensitivity_)
-        specificity_ = 1.*cm1[0,0]/(cm1[0,1]+cm1[0,0])
-        specificity.append(specificity_)
-        precision_ = 1.*cm1[1,1]/(cm1[1,1]+cm1[0,1])
-        precision.append(precision_)
-        G.append(np.sqrt(sensitivity_*specificity_))
-        F1_score_2.append(2*precision_*sensitivity_/(precision_+sensitivity_))
-        mcc = (cm1[0,0]*cm1[1,1]-cm1[0,1]*cm1[1,0])/np.sqrt((cm1[0,0]+cm1[0,1])*(cm1[0,0]+cm1[1,0])*(cm1[1,1]+cm1[1,0])*(cm1[1,1]+cm1[0,1]))
-        mcc_.append(mcc)
+#     for i in range(1, confusion_matrix.shape[0]):
+#         cm1=confusion_matrix[i]
+#         acc.append(1.*(cm1[0,0]+cm1[1,1])/np.sum(cm1))
+#         sensitivity_ = 1.*cm1[1,1]/(cm1[1,0]+cm1[1,1])
+#         sensitivity.append(sensitivity_)
+#         specificity_ = 1.*cm1[0,0]/(cm1[0,1]+cm1[0,0])
+#         specificity.append(specificity_)
+#         precision_ = 1.*cm1[1,1]/(cm1[1,1]+cm1[0,1])
+#         precision.append(precision_)
+#         G.append(np.sqrt(sensitivity_*specificity_))
+#         F1_score_2.append(2*precision_*sensitivity_/(precision_+sensitivity_))
+#         mcc = (cm1[0,0]*cm1[1,1]-cm1[0,1]*cm1[1,0])/np.sqrt((cm1[0,0]+cm1[0,1])*(cm1[0,0]+cm1[1,0])*(cm1[1,1]+cm1[1,0])*(cm1[1,1]+cm1[0,1]))
+#         mcc_.append(mcc)
         
-    acc = np.array(acc).mean()
-    sensitivity = np.array(sensitivity).mean()
-    specificity = np.array(specificity).mean()
-    precision = np.array(precision).mean()
-    G = np.array(G).mean()
-    F1_score_2 = np.array(F1_score_2).mean()
-    mcc_ = np.array(mcc_).mean()
+#     acc = np.array(acc).mean()
+#     sensitivity = np.array(sensitivity).mean()
+#     specificity = np.array(specificity).mean()
+#     precision = np.array(precision).mean()
+#     G = np.array(G).mean()
+#     F1_score_2 = np.array(F1_score_2).mean()
+#     mcc_ = np.array(mcc_).mean()
     
-    return acc, sensitivity, specificity, precision, G, F1_score_2, mcc_
+#     return acc, sensitivity, specificity, precision, G, F1_score_2, mcc_
 
 
+def misc_measures(confusion_matrix):
+    try:
+        # Verify the input is a numpy array
+        if not isinstance(confusion_matrix, np.ndarray):
+            raise TypeError("Input must be a numpy array.")
+        
+        # Ensure the input is not empty
+        if confusion_matrix.size == 0:
+            raise ValueError("Input confusion matrix array is empty.")
+        
+        # Check if each sub-matrix has the expected 2x2 shape
+        if any(cm.shape != (2, 2) for cm in confusion_matrix):
+            raise ValueError("Each confusion matrix should be of shape 2x2.")
+        
+        acc, sensitivity, specificity, precision, G, F1_score_2, mcc_ = [], [], [], [], [], [], []
+        
+        for i, cm1 in enumerate(confusion_matrix):
+            # Handle accuracy calculation
+            try:
+                acc_value = (cm1[0, 0] + cm1[1, 1]) / np.sum(cm1)
+                acc.append(acc_value)
+            except Exception as e:
+                print(f"Warning: An error occurred with accuracy calculation for confusion matrix {i}: {e}")
+                acc.append(float('nan'))
 
+            # Handle sensitivity calculation
+            try:
+                sensitivity_ = cm1[1, 1] / (cm1[1, 0] + cm1[1, 1])
+                sensitivity.append(sensitivity_)
+            except Exception as e:
+                print(f"Warning: An error occurred with sensitivity calculation for confusion matrix {i}: {e}")
+                sensitivity.append(float('nan'))
+
+            # Handle specificity calculation
+            try:
+                specificity_ = cm1[0, 0] / (cm1[0, 1] + cm1[0, 0])
+                specificity.append(specificity_)
+            except Exception as e:
+                print(f"Warning: An error occurred with specificity calculation for confusion matrix {i}: {e}")
+                specificity.append(float('nan'))
+
+            # Handle precision calculation
+            try:
+                precision_ = cm1[1, 1] / (cm1[1, 1] + cm1[0, 1])
+                precision.append(precision_)
+            except Exception as e:
+                print(f"Warning: An error occurred with precision calculation for confusion matrix {i}: {e}")
+                precision.append(float('nan'))
+
+            # Handle G calculation
+            try:
+                G_value = np.sqrt(sensitivity_ * specificity_)
+                G.append(G_value)
+            except Exception as e:
+                print(f"Warning: An error occurred with G calculation for confusion matrix {i}: {e}")
+                G.append(float('nan'))
+
+            # Handle F1 score calculation
+            try:
+                F1_score_2_value = 2 * precision_ * sensitivity_ / (precision_ + sensitivity_)
+                F1_score_2.append(F1_score_2_value)
+            except Exception as e:
+                print(f"Warning: An error occurred with F1 score calculation for confusion matrix {i}: {e}")
+                F1_score_2.append(float('nan'))
+
+            # Handle MCC calculation
+            try:
+                mcc_value = (cm1[0, 0] * cm1[1, 1] - cm1[0, 1] * cm1[1, 0]) / \
+                            np.sqrt((cm1[0, 0] + cm1[0, 1]) * (cm1[0, 0] + cm1[1, 0]) *
+                                    (cm1[1, 1] + cm1[1, 0]) * (cm1[1, 1] + cm1[0, 1]))
+                mcc_.append(mcc_value)
+            except Exception as e:
+                print(f"Warning: An error occurred with MCC calculation for confusion matrix {i}: {e}")
+                mcc_.append(float('nan'))
+        
+        # Calculate the mean for each metric, ignoring NaN values
+        acc = np.nanmean(acc)
+        sensitivity = np.nanmean(sensitivity)
+        specificity = np.nanmean(specificity)
+        precision = np.nanmean(precision)
+        G = np.nanmean(G)
+        F1_score_2 = np.nanmean(F1_score_2)
+        mcc_ = np.nanmean(mcc_)
+        
+        return acc, sensitivity, specificity, precision, G, F1_score_2, mcc_
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None, None, None, None, None, None, None
 
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
