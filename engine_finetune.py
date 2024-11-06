@@ -189,8 +189,18 @@ def evaluate(data_loader, model, device, task, epoch, mode, num_class):
     print(f"confusion_matrix : {confusion_matrix}")
     acc, sensitivity, specificity, precision, G, F1, mcc = misc_measures(confusion_matrix)
     
-    auc_roc = roc_auc_score(true_label_onehot_list, prediction_list,multi_class='ovr',average='macro')
-    auc_pr = average_precision_score(true_label_onehot_list, prediction_list,average='macro')          
+    try:
+        auc_roc = roc_auc_score(true_label_onehot_list, prediction_list,multi_class='ovr',average='macro')
+    except Exception as e:
+        print(f"auc_roc calculation failed: {e}")
+        auc_roc = np.nan
+        
+    try:
+        auc_pr = average_precision_score(true_label_onehot_list, prediction_list,average='macro')
+    except Exception as e:
+        print(f"auc_pr calculation failed: {e}")
+        auc_pr = np.nan
+              
             
     metric_logger.synchronize_between_processes()
     
