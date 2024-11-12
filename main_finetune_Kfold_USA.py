@@ -175,7 +175,8 @@ def main(args):
         
         print("Validation Set Filenames for Fold {}: ".format(fold + 1))
         for idx in val_idx:
-            filename = dataset_full[idx].filename  # Adjust according to your dataset's structure
+            filename, _ = dataset_full.samples[idx]  # Access the filename from the samples attribute
+            print(filename)
             
         print(filename)
         dataset_train = torch.utils.data.Subset(dataset_full, train_idx)
