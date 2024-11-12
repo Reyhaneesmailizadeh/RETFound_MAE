@@ -172,7 +172,12 @@ def main(args):
     N_FOLDS = 25
     kf = KFold(n_splits=N_FOLDS, shuffle=True, random_state=args.seed)
     for fold, (train_idx, val_idx) in enumerate(kf.split(dataset_full)):
-      
+        
+        # print("Validation Set Filenames for Fold {}: ".format(fold + 1))
+        # for idx in val_idx:
+        #     filename = dataset_full[idx].filename  # Adjust according to your dataset's structure
+            
+        print(filename)
         dataset_train = torch.utils.data.Subset(dataset_full, train_idx)
         dataset_val = torch.utils.data.Subset(dataset_full, val_idx)
         print("------------------------------------------------------------------------------------------------------------------------------")
