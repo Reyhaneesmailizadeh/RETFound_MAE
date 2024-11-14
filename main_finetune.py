@@ -258,7 +258,10 @@ def main(args):
 
         # interpolate position embedding
         interpolate_pos_embed(model, checkpoint_model)
-
+        
+        # manually initialize fc layer
+        trunc_normal_(model.head.weight, std=2e-5)
+        
         # load pre-trained model
         msg = model.load_state_dict(checkpoint_model, strict=False)
         print(msg.missing_keys)
@@ -268,8 +271,7 @@ def main(args):
         # else:
         #     assert set(msg.missing_keys) == {'head.weight', 'head.bias'}
 
-        # manually initialize fc layer
-        trunc_normal_(model.head.weight, std=2e-5)
+        
 
     model.to(device)
 
