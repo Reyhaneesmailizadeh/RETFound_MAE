@@ -2,6 +2,8 @@
 # All rights reserved.
 # Partly revised by YZ @UCL&Moorfields
 # --------------------------------------------------------
+import torch.nn as nn
+import torch.nn.init as init
 
 import argparse
 import datetime
@@ -273,7 +275,7 @@ def main(args):
             interpolate_pos_embed(model, checkpoint_model)
             
             # manually initialize fc layer
-            trunc_normal_(model.head.weight, std=2e-5)
+            init.xavier_uniform_(model.head.weight)
             
             # load pre-trained model
             msg = model.load_state_dict(checkpoint_model, strict=False)
