@@ -13,7 +13,8 @@ from pathlib import Path
 import torch
 import torch.distributed as dist
 from torch._six import inf
-
+import torch.nn as nn
+import torch.nn.init as init
 
 class SmoothedValue(object):
     """Track a series of values and provide access to smoothed values over a
@@ -356,7 +357,7 @@ def load_model(args, model_without_ddp, optimizer, loss_scaler):
             checkpoint = torch.load(args.resume, map_location='cpu')
             
         # manually initialize fc layer
-        trunc_normal_(model_without_ddp.head.weight, std=2e-5)
+        init.xavier_normal_(model_without_ddp.head.weight)
         model_without_ddp.load_state_dict(checkpoint['model'], strict = False)
         
         print("Resume checkpoint %s" % args.resume)
