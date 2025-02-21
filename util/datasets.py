@@ -7,7 +7,7 @@ import os
 from torchvision import datasets, transforms
 from timm.data import create_transform
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-
+from torch.utils.data import DataLoader, ConcatDataset
 
 def build_dataset(is_train, args):
     
@@ -17,7 +17,16 @@ def build_dataset(is_train, args):
 
     return dataset
 
-
+def build_dataset_usa(is_train, args):
+    
+    transform = build_transform(is_train, args)
+    root_test = os.path.join(args.usa_dir, 'test')
+    root_train = os.path.join(args.usa_dir, 'train')
+    dataset_test = datasets.ImageFolder(root_test, transform=transform)
+    dataset_train = datasets.ImageFolder(root_train, transform=transform)
+    combined_data = ConcatDataset([dataset_test, dataset_train])
+    return combined_data
+    
 def build_transform(is_train, args):
     mean = IMAGENET_DEFAULT_MEAN
     std = IMAGENET_DEFAULT_STD
