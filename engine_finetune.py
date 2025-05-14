@@ -272,6 +272,7 @@ def evaluate(data_loader, model, device, task, epoch, mode, num_class):
     true_label_decode_list = np.array(true_label_decode_list)
     prediction_decode_list = np.array(prediction_decode_list)
     print(f"true labels: {true_label_decode_list}")
+    print(f"predicted probabilities: {prediction_list}")
     print(f"predicted labels: {prediction_decode_list}")
     confusion_matrix = multilabel_confusion_matrix(true_label_decode_list, prediction_decode_list,labels=[i for i in range(num_class)])
     print(f"confusion_matrix : {confusion_matrix}")
